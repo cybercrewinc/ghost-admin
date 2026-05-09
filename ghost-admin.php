@@ -1,7 +1,7 @@
 <?php
 /**
  * Plugin Name:  GhostAdmin
- * Plugin URI:   https://cyber.spool.co.jp/ghost-admin
+ * Plugin URI:   https://github.com/cybercrewinc/ghost-admin
  * Description:  Hides your WordPress admin presence entirely.
  * Version:      1.0.0
  * Author:       CyberCrew

@@ -40,6 +40,10 @@ your own office IP or a trusted CI/CD runner.
 * admin-post.php for WP-Cron is always exempt from default-login blocking.
 * Logged-in administrators are never blocked regardless of settings.
 
+= Source Code =
+
+Source code is publicly available at: https://github.com/cybercrewinc/ghost-admin
+
 == Installation ==
 
 1. Upload the `ghost-admin` folder to `/wp-content/plugins/`.
@@ -49,8 +53,9 @@ your own office IP or a trusted CI/CD runner.
 5. Click **Save Settings**.
 
 **Important:** Note your custom login slug *before* enabling the block. If you
-forget it, you can still log in by appending `?ga_bypass=1` to /wp-login.php while
-temporarily disabling the plugin via FTP (rename the plugin folder).
+forget it, temporarily rename the plugin folder via FTP to disable GhostAdmin —
+this restores access to /wp-login.php. Log in, rename the folder back, and
+retrieve your slug from the settings page.
 
 == Frequently Asked Questions ==
 
@@ -82,15 +87,20 @@ Only the URL is blocked. The `xmlrpc_enabled` filter is not touched, so plugins
 that hook into XML-RPC internally are unaffected. If you use Jetpack, keep the
 xmlrpc.php toggle off.
 
+= Does this plugin collect any data? =
+
+No. GhostAdmin makes no external HTTP requests and collects no user data. All
+settings are stored locally in your WordPress database only.
+
 == Changelog ==
 
 = 1.0.0 =
 * Initial release.
-* Custom admin URL with rewrite-rule routing.
+* Custom admin URL — replace /wp-login.php with any slug.
 * Stealth 404 blocking for /wp-login.php and /wp-admin/.
 * Direct folder and sensitive file blocking.
-* IP/CIDR whitelist.
-* Dark stealth admin UI.
+* IP/CIDR whitelist bypass.
+* Clean flat light-mode admin UI.
 
 == Upgrade Notice ==
 
