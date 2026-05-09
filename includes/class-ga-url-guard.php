@@ -21,6 +21,10 @@ class GA_Url_Guard {
         add_filter( 'logout_url',       [ $this, 'filter_logout_url' ],       10, 2 );
         add_filter( 'lostpassword_url', [ $this, 'filter_login_url_simple' ], 10, 2 );
         add_filter( 'register_url',     [ $this, 'filter_login_url_simple' ], 10, 1 );
+
+        // The login form action uses site_url('wp-login.php','login_post') directly —
+        // it bypasses login_url filter. Swap it so the POST goes to the custom slug.
+        add_filter( 'site_url', [ $this, 'filter_site_url_login' ], 10, 4 );
     }
 
     // -------------------------------------------------------------------------
@@ -138,6 +142,27 @@ class GA_Url_Guard {
         }
         // Replace only the path segment — keep all query args intact.
         return str_replace( 'wp-login.php', trailingslashit( $slug ), $url );
+    }
+
+    /**
+     * Filter site_url() so the login form <form action="..."> points at the custom slug.
+     * wp-login.php builds its form action via site_url('wp-login.php','login_post'),
+     * which does not go through the login_url filter.
+     *
+     * @param string      $url     The full URL.
+     * @param string      $path    The path passed to site_url().
+     * @param string|null $scheme  URL scheme.
+     * @param int|null    $blog_id Blog ID (multisite).
+     */
+    public function filter_site_url_login( string $url, string $path, ?string $scheme, ?int $blog_id ): string {
+        $slug = GA_Settings::get( 'custom_login_slug' );
+        if ( '' === $slug ) {
+            return $url;
+        }
+        if ( false !== strpos( $path, 'wp-login.php' ) ) {
+            return str_replace( 'wp-login.php', trailingslashit( $slug ), $url );
+        }
+        return $url;
     }
 
     // -------------------------------------------------------------------------
