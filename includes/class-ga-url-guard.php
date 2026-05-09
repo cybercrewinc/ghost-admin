@@ -7,85 +7,98 @@ defined( 'ABSPATH' ) || exit;
 
 class GA_Url_Guard {
 
-    /**
-     * Wire all hooks for URL interception and rewrite rule registration.
-     */
     public function register_hooks(): void {
-        add_action( 'init',               [ $this, 'register_rewrite_rules' ],  1 );
-        add_action( 'template_redirect',  [ $this, 'intercept_request' ],       1 );
+        // Priority 1 in init so we serve wp-login.php before anything else runs.
+        add_action( 'init',              [ $this, 'serve_custom_login_slug' ], 1 );
+        add_action( 'template_redirect', [ $this, 'intercept_request' ],       1 );
 
-        // Redirect logged-in users who visit the custom slug to wp-admin.
-        add_action( 'template_redirect',  [ $this, 'handle_custom_login_redirect' ], 2 );
+        // Rewrite all WP-generated login/logout URLs to use the custom slug.
+        add_filter( 'login_url',  [ $this, 'filter_login_url' ],  10, 3 );
+        add_filter( 'logout_url', [ $this, 'filter_logout_url' ], 10, 2 );
+        add_filter( 'lostpassword_url', [ $this, 'filter_login_url_simple' ], 10, 2 );
+        add_filter( 'register_url',     [ $this, 'filter_login_url_simple' ], 10, 1 );
     }
 
-    /**
-     * Instance method wrapper — delegates to the static version so GA_Activator
-     * can call it before the instance is fully bootstrapped.
-     */
-    public function register_rewrite_rules(): void {
-        self::register_rewrite_rules_static();
-    }
+    // -------------------------------------------------------------------------
+    // Custom login slug — serve wp-login.php directly, no HTTP redirect.
+    // -------------------------------------------------------------------------
 
     /**
-     * Static: register the custom login rewrite rule.
-     * Called both from the instance hook and directly from GA_Activator.
+     * Detect the custom login slug in the current request and include wp-login.php
+     * directly. This avoids an HTTP redirect loop when wp-login.php is also blocked.
      */
-    public static function register_rewrite_rules_static(): void {
-        $slug = GA_Settings::get( 'custom_login_slug' );
-        if ( '' === $slug ) {
-            return;
-        }
-        // Map /custom-slug and /custom-slug/ to wp-login.php.
-        add_rewrite_rule(
-            '^' . preg_quote( $slug, '#' ) . '/?$',
-            'index.php?ga_login=1',
-            'top'
-        );
-        add_rewrite_tag( '%ga_login%', '([0-9]+)' );
-    }
-
-    /**
-     * When a user hits the custom login URL, forward them to wp-login.php.
-     * Logged-in admins go straight to wp-admin.
-     */
-    public function handle_custom_login_redirect(): void {
+    public function serve_custom_login_slug(): void {
         $slug = GA_Settings::get( 'custom_login_slug' );
         if ( '' === $slug ) {
             return;
         }
 
-        $raw_uri      = sanitize_text_field( wp_unslash( $_SERVER['REQUEST_URI'] ?? '' ) );
-        $request_path = trim( wp_parse_url( $raw_uri, PHP_URL_PATH ) ?? '', '/' );
-
-        if ( $request_path !== trim( $slug, '/' ) ) {
+        $relative = $this->get_relative_request_path();
+        if ( rtrim( $relative, '/' ) !== trim( $slug, '/' ) ) {
             return;
         }
 
-        if ( is_user_logged_in() && current_user_can( 'manage_options' ) ) {
-            wp_safe_redirect( admin_url() );
-            exit;
-        }
+        // Preserve query string (redirect_to, action, etc.).
+        nocache_headers();
 
-        // Pass through to wp-login.php while preserving query string.
-        $query_string = sanitize_text_field( wp_unslash( $_SERVER['QUERY_STRING'] ?? '' ) );
-        $target       = site_url( 'wp-login.php' ) . ( '' !== $query_string ? '?' . $query_string : '' );
-        wp_safe_redirect( $target );
+        // phpcs:ignore WordPressVIPMinimum.Files.IncludingFile.UsingVariable
+        require ABSPATH . 'wp-login.php';
         exit;
     }
 
     /**
-     * Main request interceptor — runs at template_redirect priority 1.
+     * Filter login_url() to replace wp-login.php with the custom slug.
+     *
+     * @param string $login_url    The original login URL.
+     * @param string $redirect     Redirect destination.
+     * @param bool   $force_reauth Whether reauth is forced.
      */
-    public function intercept_request(): void {
-        $request_uri  = sanitize_text_field( wp_unslash( $_SERVER['REQUEST_URI'] ?? '' ) );
-        $request_path = wp_parse_url( $request_uri, PHP_URL_PATH ) ?? '';
+    public function filter_login_url( string $login_url, string $redirect, bool $force_reauth ): string {
+        return $this->swap_login_url( $login_url );
+    }
 
-        // Never block admin-ajax.php — plugins rely on it from the front end.
+    /** Simpler variant for filters that pass fewer args (lostpassword, register). */
+    public function filter_login_url_simple( string $url ): string {
+        return $this->swap_login_url( $url );
+    }
+
+    /**
+     * Filter logout_url() to point the return-to URL at the custom slug.
+     *
+     * @param string $logout_url The original logout URL.
+     * @param string $redirect   Redirect destination.
+     */
+    public function filter_logout_url( string $logout_url, string $redirect ): string {
+        return $this->swap_login_url( $logout_url );
+    }
+
+    /**
+     * Replace wp-login.php in a URL with the custom slug, preserving scheme/host/query.
+     */
+    private function swap_login_url( string $url ): string {
+        $slug = GA_Settings::get( 'custom_login_slug' );
+        if ( '' === $slug ) {
+            return $url;
+        }
+        // Replace only the path segment — keep all query args intact.
+        return str_replace( 'wp-login.php', trailingslashit( $slug ), $url );
+    }
+
+    // -------------------------------------------------------------------------
+    // Request blocker — template_redirect priority 1.
+    // -------------------------------------------------------------------------
+
+    public function intercept_request(): void {
+        $request_path = wp_parse_url(
+            sanitize_text_field( wp_unslash( $_SERVER['REQUEST_URI'] ?? '' ) ),
+            PHP_URL_PATH
+        ) ?? '';
+
+        // Never block admin-ajax.php — front-end plugins (WooCommerce, CF7…) rely on it.
         if ( false !== strpos( $request_path, 'admin-ajax.php' ) ) {
             return;
         }
 
-        // Whitelisted IPs pass through everything.
         if ( $this->ip_is_whitelisted() ) {
             return;
         }
@@ -119,12 +132,15 @@ class GA_Url_Guard {
     // -------------------------------------------------------------------------
 
     private function maybe_block_default_login( string $path, array $settings ): void {
-        // wp-login.php — block direct access entirely.
-        if ( preg_match( '#/wp-login\.php#i', $path ) ) {
+        // Safety: never block wp-login.php when no custom slug is configured —
+        // doing so would lock every user out of the site.
+        $has_custom_slug = '' !== GA_Settings::get( 'custom_login_slug' );
+
+        if ( $has_custom_slug && preg_match( '#/wp-login\.php#i', $path ) ) {
             $this->send_block( $settings );
         }
 
-        // /wp-admin/ for unauthenticated users — but allow admin-post.php for cron.
+        // Block /wp-admin/ for unauthenticated visitors; allow admin-post.php (cron).
         if ( preg_match( '#/wp-admin/#i', $path ) ) {
             if ( false !== strpos( $path, 'admin-post.php' ) ) {
                 return;
@@ -134,7 +150,6 @@ class GA_Url_Guard {
     }
 
     private function maybe_block_folder_access( string $path, array $settings ): void {
-        // Only block bare directory traversal attempts, not legitimate file requests.
         if ( preg_match( '#/wp-content/?$#i', $path ) ) {
             $this->send_block( $settings );
         }
@@ -152,7 +167,6 @@ class GA_Url_Guard {
             'wp-config-sample\.php',
         ];
 
-        // xmlrpc.php has its own toggle; skip here if block_xmlrpc is off.
         if ( ! $settings['block_xmlrpc'] ) {
             $sensitive = array_filter(
                 $sensitive,
@@ -177,9 +191,6 @@ class GA_Url_Guard {
     // Response helpers
     // -------------------------------------------------------------------------
 
-    /**
-     * Terminate the request with a stealth 404 or a plain 403, depending on settings.
-     */
     private function send_block( array $settings ): void {
         if ( $settings['stealth_404'] ) {
             global $wp_query;
@@ -187,19 +198,17 @@ class GA_Url_Guard {
             status_header( 404 );
             nocache_headers();
 
-            // Attempt to load the theme 404 template; fall back to a plain exit.
             $template = get_404_template();
             if ( $template && file_exists( $template ) ) {
                 // phpcs:ignore WordPressVIPMinimum.Files.IncludingFile.UsingVariable
                 include $template;
             } else {
                 echo '<!DOCTYPE html><html><head><title>404 Not Found</title></head>';
-                echo '<body><h1>Not Found</h1><p>The page you requested could not be found.</p></body></html>';
+                echo '<body><h1>Not Found</h1></body></html>';
             }
             exit;
         }
 
-        // Non-stealth: plain 403.
         wp_die(
             esc_html__( 'Forbidden', 'ghost-admin' ),
             esc_html__( 'Access Denied', 'ghost-admin' ),
@@ -208,19 +217,37 @@ class GA_Url_Guard {
     }
 
     // -------------------------------------------------------------------------
-    // IP whitelist check
+    // Path helpers
     // -------------------------------------------------------------------------
 
     /**
-     * Returns true if the current visitor's IP is in the whitelist.
+     * Returns the request path relative to the WordPress site root.
+     * Handles WP installed in a subdirectory (e.g. /wordpress/xx → xx).
      */
+    private function get_relative_request_path(): string {
+        $raw_uri = sanitize_text_field( wp_unslash( $_SERVER['REQUEST_URI'] ?? '' ) );
+        $path    = wp_parse_url( $raw_uri, PHP_URL_PATH ) ?? '';
+
+        // Strip the site's subdirectory prefix so /wordpress/xx becomes xx.
+        $site_root = rtrim( wp_parse_url( site_url(), PHP_URL_PATH ) ?? '', '/' ) . '/';
+        if ( '/' !== $site_root && str_starts_with( $path, $site_root ) ) {
+            $path = substr( $path, strlen( $site_root ) );
+        }
+
+        return ltrim( $path, '/' );
+    }
+
+    // -------------------------------------------------------------------------
+    // IP whitelist
+    // -------------------------------------------------------------------------
+
     private function ip_is_whitelisted(): bool {
         $list_raw = GA_Settings::get( 'whitelist_ips' );
         if ( '' === $list_raw ) {
             return false;
         }
 
-        $visitor_ip = $this->get_visitor_ip();
+        $visitor_ip = sanitize_text_field( wp_unslash( $_SERVER['REMOTE_ADDR'] ?? '' ) );
         if ( '' === $visitor_ip ) {
             return false;
         }
@@ -235,11 +262,9 @@ class GA_Url_Guard {
             if ( '' === $entry ) {
                 continue;
             }
-            // Exact IP match.
             if ( $entry === $visitor_ip ) {
                 return true;
             }
-            // CIDR match.
             if ( str_contains( $entry, '/' ) && $this->ip_in_cidr( $visitor_ip, $entry ) ) {
                 return true;
             }
@@ -248,17 +273,6 @@ class GA_Url_Guard {
         return false;
     }
 
-    /**
-     * Returns the real visitor IP, preferring REMOTE_ADDR for security.
-     * Only falls back to forwarded headers if REMOTE_ADDR is a known proxy.
-     */
-    private function get_visitor_ip(): string {
-        return sanitize_text_field( wp_unslash( $_SERVER['REMOTE_ADDR'] ?? '' ) );
-    }
-
-    /**
-     * Check if an IPv4 address falls within a CIDR range.
-     */
     private function ip_in_cidr( string $ip, string $cidr ): bool {
         [ $subnet, $mask ] = explode( '/', $cidr, 2 );
         if ( ! is_numeric( $mask ) ) {

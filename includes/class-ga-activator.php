@@ -16,8 +16,7 @@ class GA_Activator {
             add_option( 'ga_settings', GA_Settings::defaults(), '', false );
         }
 
-        // Register rules before flushing so they are written to .htaccess / nginx map.
-        GA_Url_Guard::register_rewrite_rules_static();
+        // Flush so any previously registered rewrite rules are cleared.
         flush_rewrite_rules();
     }
 
