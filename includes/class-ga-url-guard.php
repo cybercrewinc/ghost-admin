@@ -8,15 +8,68 @@ defined( 'ABSPATH' ) || exit;
 class GA_Url_Guard {
 
     public function register_hooks(): void {
-        // Priority 1 in init so we serve wp-login.php before anything else runs.
-        add_action( 'init',              [ $this, 'serve_custom_login_slug' ], 1 );
-        add_action( 'template_redirect', [ $this, 'intercept_request' ],       1 );
+        // Priority 1: serve custom login slug (must be before WP processes the request).
+        add_action( 'init', [ $this, 'serve_custom_login_slug' ],  1 );
+        // Priority 2: block wp-admin / wp-login early — before auth_redirect() fires.
+        add_action( 'init', [ $this, 'block_admin_paths_early' ], 2 );
+
+        // template_redirect handles frontend paths (folder listings, sensitive files).
+        add_action( 'template_redirect', [ $this, 'intercept_request' ], 1 );
 
         // Rewrite all WP-generated login/logout URLs to use the custom slug.
-        add_filter( 'login_url',  [ $this, 'filter_login_url' ],  10, 3 );
-        add_filter( 'logout_url', [ $this, 'filter_logout_url' ], 10, 2 );
+        add_filter( 'login_url',        [ $this, 'filter_login_url' ],        10, 3 );
+        add_filter( 'logout_url',       [ $this, 'filter_logout_url' ],       10, 2 );
         add_filter( 'lostpassword_url', [ $this, 'filter_login_url_simple' ], 10, 2 );
         add_filter( 'register_url',     [ $this, 'filter_login_url_simple' ], 10, 1 );
+    }
+
+    // -------------------------------------------------------------------------
+    // Early wp-admin / wp-login block — init priority 2.
+    // Must run before auth_redirect() inside /wp-admin/admin.php fires.
+    // template_redirect never runs for /wp-admin/ requests so this is the
+    // only hook that fires in time.
+    // -------------------------------------------------------------------------
+
+    public function block_admin_paths_early(): void {
+        $settings = GA_Settings::get_all();
+
+        if ( ! $settings['block_default_login'] ) {
+            return;
+        }
+
+        $path = wp_parse_url(
+            sanitize_text_field( wp_unslash( $_SERVER['REQUEST_URI'] ?? '' ) ),
+            PHP_URL_PATH
+        ) ?? '';
+
+        // AJAX and cron must always pass through.
+        if ( false !== strpos( $path, 'admin-ajax.php' ) ) {
+            return;
+        }
+        if ( false !== strpos( $path, 'admin-post.php' ) ) {
+            return;
+        }
+
+        if ( $this->ip_is_whitelisted() ) {
+            return;
+        }
+
+        // Logged-in admins always pass through.
+        if ( is_user_logged_in() && current_user_can( 'manage_options' ) ) {
+            return;
+        }
+
+        $has_custom_slug = '' !== GA_Settings::get( 'custom_login_slug' );
+
+        // Block /wp-login.php only when a custom slug is configured.
+        if ( $has_custom_slug && preg_match( '#/wp-login\.php#i', $path ) ) {
+            $this->send_block_early( $settings );
+        }
+
+        // Block /wp-admin/ (bare and any sub-path except ajax/cron already exempted above).
+        if ( preg_match( '#/wp-admin(/|$)#i', $path ) ) {
+            $this->send_block_early( $settings );
+        }
     }
 
     // -------------------------------------------------------------------------
@@ -110,9 +163,8 @@ class GA_Url_Guard {
 
         $settings = GA_Settings::get_all();
 
-        if ( $settings['block_default_login'] ) {
-            $this->maybe_block_default_login( $request_path, $settings );
-        }
+        // wp-admin and wp-login are blocked in the init hook (block_admin_paths_early).
+        // template_redirect only handles frontend paths below.
 
         if ( $settings['block_folder_access'] ) {
             $this->maybe_block_folder_access( $request_path, $settings );
@@ -190,6 +242,26 @@ class GA_Url_Guard {
     // -------------------------------------------------------------------------
     // Response helpers
     // -------------------------------------------------------------------------
+
+    /**
+     * Early block (init context) — theme templates aren't available yet,
+     * so we output minimal static HTML.
+     */
+    private function send_block_early( array $settings ): void {
+        nocache_headers();
+        if ( ! $settings['stealth_404'] ) {
+            wp_die(
+                esc_html__( 'Forbidden', 'ghost-admin' ),
+                esc_html__( 'Access Denied', 'ghost-admin' ),
+                [ 'response' => 403 ]
+            );
+        }
+        status_header( 404 );
+        header( 'Content-Type: text/html; charset=UTF-8' );
+        echo '<!DOCTYPE html><html lang="en"><head><meta charset="UTF-8"><title>Page Not Found</title></head>';
+        echo '<body><h1>Not Found</h1><p>The page you were looking for could not be found.</p></body></html>';
+        exit;
+    }
 
     private function send_block( array $settings ): void {
         if ( $settings['stealth_404'] ) {
