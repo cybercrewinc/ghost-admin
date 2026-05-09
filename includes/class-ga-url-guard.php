@@ -91,8 +91,11 @@ class GA_Url_Guard {
             return;
         }
 
-        // Preserve query string (redirect_to, action, etc.).
         nocache_headers();
+
+        // wp-login.php has uninitialized variables on PHP 8.x that only show when
+        // XAMPP/server has display_errors=On in php.ini — suppress before include.
+        ini_set( 'display_errors', '0' ); // phpcs:ignore WordPress.PHP.IniSet.display_errors_Disallowed
 
         // phpcs:ignore WordPressVIPMinimum.Files.IncludingFile.UsingVariable
         require ABSPATH . 'wp-login.php';
