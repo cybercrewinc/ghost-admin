@@ -95,6 +95,7 @@ class GA_Admin {
                 <!-- Custom Login URL -->
                 <section class="ga-card">
                     <h2 class="ga-section-title"><?php esc_html_e( 'Custom Admin URL', 'ghost-admin' ); ?></h2>
+                    <hr class="ga-section-divider">
 
                     <div class="ga-field">
                         <label for="ga_slug" class="ga-label">
@@ -122,6 +123,7 @@ class GA_Admin {
                 <!-- Default URL Blocking -->
                 <section class="ga-card">
                     <h2 class="ga-section-title"><?php esc_html_e( 'Block Default Admin URLs', 'ghost-admin' ); ?></h2>
+                    <hr class="ga-section-divider">
 
                     <div class="ga-field ga-field--row">
                         <label class="ga-toggle-label">
@@ -140,6 +142,7 @@ class GA_Admin {
                 <!-- Folder / File Blocking -->
                 <section class="ga-card">
                     <h2 class="ga-section-title"><?php esc_html_e( 'Block Direct File & Folder Access', 'ghost-admin' ); ?></h2>
+                    <hr class="ga-section-divider">
 
                     <div class="ga-field ga-field--row">
                         <label class="ga-toggle-label">
@@ -197,6 +200,7 @@ class GA_Admin {
                 <!-- Stealth Mode -->
                 <section class="ga-card">
                     <h2 class="ga-section-title"><?php esc_html_e( 'Stealth Mode', 'ghost-admin' ); ?></h2>
+                    <hr class="ga-section-divider">
 
                     <div class="ga-field ga-field--row">
                         <label class="ga-toggle-label">
@@ -215,6 +219,7 @@ class GA_Admin {
                 <!-- IP Whitelist -->
                 <section class="ga-card">
                     <h2 class="ga-section-title"><?php esc_html_e( 'IP Whitelist', 'ghost-admin' ); ?></h2>
+                    <hr class="ga-section-divider">
 
                     <div class="ga-field">
                         <label for="ga_whitelist" class="ga-label">

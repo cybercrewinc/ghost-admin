@@ -1,34 +1,39 @@
-/* GhostAdmin — Dark Stealth UI */
+/* GhostAdmin — Light Mode UI */
 
 :root {
-    --ga-bg:          #1a1a2e;
-    --ga-card:        #16213e;
-    --ga-card-border: #0f3460;
-    --ga-accent:      #e2e8f0;
-    --ga-purple:      #7c3aed;
-    --ga-purple-dim:  #5b21b6;
-    --ga-text:        #cbd5e1;
-    --ga-text-muted:  #64748b;
-    --ga-input-bg:    #0f172a;
-    --ga-input-border:#334155;
-    --ga-success:     #10b981;
-    --ga-radius:      8px;
-    --ga-radius-sm:   4px;
+    --ga-bg:           #f8f9fb;
+    --ga-surface:      #ffffff;
+    --ga-border:       #e5e7eb;
+    --ga-border-focus: #6366f1;
+    --ga-text:         #111827;
+    --ga-text-muted:   #6b7280;
+    --ga-purple:       #6366f1;
+    --ga-purple-hover: #4f46e5;
+    --ga-purple-light: #eef2ff;
+    --ga-success:      #10b981;
+    --ga-warning:      #f59e0b;
+    --ga-danger:       #ef4444;
+    --ga-radius:       10px;
+    --ga-radius-sm:    6px;
+    --ga-shadow:       0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
+    --ga-shadow-md:    0 4px 6px rgba(0,0,0,0.05), 0 2px 4px rgba(0,0,0,0.04);
+}
+
+/* ── WP content area background override (minimal) ── */
+
+#wpbody-content .wrap,
+.toplevel_page_ghost-admin #wpbody-content {
+    background: var(--ga-bg);
 }
 
 /* ── Base ── */
 
-#wpcontent,
-#wpbody,
-#wpbody-content {
-    background: var(--ga-bg);
-}
-
 .ga-wrap {
-    max-width: 760px;
+    max-width: 720px;
     margin: 24px auto 48px;
     padding: 0 16px;
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    font-family: -apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", sans-serif;
+    font-size: 14px;
     color: var(--ga-text);
 }
 
@@ -38,43 +43,43 @@
     box-sizing: border-box;
 }
 
-/* ── Header ── */
+.ga-wrap h1,
+.ga-wrap h2 {
+    padding: 0;
+    border: none;
+}
+
+/* ── Header card ── */
 
 .ga-header {
     display: flex;
     align-items: center;
     gap: 16px;
-    padding: 28px 28px 24px;
-    background: var(--ga-card);
-    border: 1px solid var(--ga-card-border);
+    padding: 20px 24px;
+    background: var(--ga-surface);
+    border: 1px solid var(--ga-border);
+    border-left: 3px solid var(--ga-purple);
     border-radius: var(--ga-radius);
-    margin-bottom: 20px;
-    position: relative;
-    overflow: hidden;
-}
-
-.ga-header::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    height: 3px;
-    background: linear-gradient(90deg, var(--ga-purple), transparent);
+    box-shadow: var(--ga-shadow);
+    margin-bottom: 16px;
 }
 
 .ga-header__icon {
-    font-size: 40px;
+    font-size: 48px;
     line-height: 1;
     flex-shrink: 0;
-    opacity: 0.9;
+}
+
+.ga-header__text {
+    flex: 1;
+    min-width: 0;
 }
 
 .ga-header__text h1 {
-    margin: 0 0 4px;
+    margin: 0 0 3px;
     font-size: 22px;
-    font-weight: 700;
-    color: var(--ga-accent);
+    font-weight: 600;
+    color: var(--ga-text);
     line-height: 1.2;
 }
 
@@ -87,87 +92,94 @@
 
 .ga-badge {
     margin-left: auto;
-    padding: 4px 10px;
-    background: rgba(124, 58, 237, 0.15);
-    border: 1px solid rgba(124, 58, 237, 0.3);
+    padding: 3px 10px;
+    background: var(--ga-purple-light);
     border-radius: 20px;
-    font-size: 11px;
+    font-size: 10px;
     font-weight: 600;
     color: var(--ga-purple);
-    letter-spacing: 0.5px;
+    letter-spacing: 0.4px;
     white-space: nowrap;
     flex-shrink: 0;
 }
 
-/* ── Notice ── */
+/* ── Notices ── */
 
 .ga-notice {
     padding: 12px 16px;
     border-radius: var(--ga-radius-sm);
     font-size: 13px;
-    font-weight: 500;
+    line-height: 1.6;
     margin-bottom: 16px;
 }
 
 .ga-notice--success {
-    background: rgba(16, 185, 129, 0.1);
-    border: 1px solid rgba(16, 185, 129, 0.3);
-    color: var(--ga-success);
+    background: #f0fdf4;
+    border: 1px solid #bbf7d0;
+    border-left: 3px solid var(--ga-success);
+    color: #166534;
 }
 
 .ga-notice--warning {
-    background: rgba(234, 179, 8, 0.1);
-    border: 1px solid rgba(234, 179, 8, 0.35);
-    color: #fbbf24;
+    background: #fffbeb;
+    border: 1px solid #fde68a;
+    border-left: 3px solid var(--ga-warning);
+    color: #92400e;
     line-height: 1.5;
 }
 
 .ga-notice--info {
-    background: rgba(124, 58, 237, 0.1);
-    border: 1px solid rgba(124, 58, 237, 0.35);
-    color: var(--ga-text);
+    background: #eef2ff;
+    border: 1px solid #c7d2fe;
+    border-left: 3px solid var(--ga-purple);
+    color: #3730a3;
     line-height: 1.6;
 }
 
 .ga-notice--info strong {
-    color: #a78bfa;
+    color: #3730a3;
 }
 
 .ga-login-url {
-    color: #a78bfa;
-    font-family: monospace;
+    color: var(--ga-purple);
     font-size: 13px;
+    font-weight: 500;
     word-break: break-all;
     text-decoration: none;
 }
 
 .ga-login-url:hover {
     text-decoration: underline;
-    color: var(--ga-purple);
+    color: var(--ga-purple-hover);
 }
 
 /* ── Card ── */
 
 .ga-card {
-    background: var(--ga-card);
-    border: 1px solid var(--ga-card-border);
+    background: var(--ga-surface);
+    border: 1px solid var(--ga-border);
     border-radius: var(--ga-radius);
-    padding: 24px 28px;
+    padding: 20px 24px;
     margin-bottom: 16px;
+    box-shadow: var(--ga-shadow);
 }
 
 /* ── Section title ── */
 
 .ga-section-title {
-    margin: 0 0 20px;
-    font-size: 13px;
+    margin: 0 0 12px;
+    font-size: 11px;
     font-weight: 600;
     text-transform: uppercase;
-    letter-spacing: 0.8px;
-    color: var(--ga-accent);
-    padding-left: 12px;
-    border-left: 3px solid var(--ga-purple);
+    letter-spacing: 0.06em;
+    color: var(--ga-text-muted);
     line-height: 1.3;
+}
+
+.ga-section-divider {
+    border: none;
+    border-top: 1px solid var(--ga-border);
+    margin: 0 0 20px;
 }
 
 /* ── Field ── */
@@ -182,7 +194,7 @@
 
 .ga-field--row {
     padding: 14px 0;
-    border-bottom: 1px solid rgba(15, 52, 96, 0.6);
+    border-bottom: 1px solid var(--ga-border);
 }
 
 .ga-field--row:last-child {
@@ -199,71 +211,71 @@
 .ga-label {
     display: block;
     font-size: 13px;
-    font-weight: 600;
-    color: var(--ga-accent);
+    font-weight: 500;
+    color: var(--ga-text);
     margin-bottom: 8px;
 }
 
 /* ── Input ── */
 
 .ga-input {
-    background: var(--ga-input-bg);
-    border: 1px solid var(--ga-input-border);
+    width: 100%;
+    height: 36px;
+    background: var(--ga-surface);
+    border: 1px solid var(--ga-border);
     border-radius: var(--ga-radius-sm);
-    color: var(--ga-accent);
+    color: var(--ga-text);
     font-size: 13px;
     padding: 8px 12px;
     outline: none;
     transition: border-color 0.15s, box-shadow 0.15s;
-    width: 220px;
-    font-family: "SFMono-Regular", Consolas, monospace;
+    font-family: inherit;
 }
 
 .ga-input:focus {
-    border-color: var(--ga-purple);
-    box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.15);
+    border-color: var(--ga-border-focus);
+    box-shadow: 0 0 0 3px rgba(99,102,241,0.12);
 }
 
 .ga-input::placeholder {
     color: var(--ga-text-muted);
 }
 
-/* ── Slug preview ── */
+/* ── Slug preview (combined field) ── */
 
 .ga-slug-preview {
     display: flex;
-    align-items: center;
-    gap: 0;
-    background: var(--ga-input-bg);
-    border: 1px solid var(--ga-input-border);
+    align-items: stretch;
+    border: 1px solid var(--ga-border);
     border-radius: var(--ga-radius-sm);
     overflow: hidden;
-    width: fit-content;
     transition: border-color 0.15s, box-shadow 0.15s;
 }
 
 .ga-slug-preview:focus-within {
-    border-color: var(--ga-purple);
-    box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.15);
+    border-color: var(--ga-border-focus);
+    box-shadow: 0 0 0 3px rgba(99,102,241,0.12);
 }
 
 .ga-slug-base {
-    padding: 8px 10px 8px 12px;
-    font-size: 12px;
+    padding: 8px 10px;
+    font-size: 13px;
     color: var(--ga-text-muted);
     font-family: "SFMono-Regular", Consolas, monospace;
     white-space: nowrap;
-    border-right: 1px solid var(--ga-input-border);
-    background: rgba(255,255,255,0.02);
+    border-right: 1px solid var(--ga-border);
+    background: var(--ga-bg);
     flex-shrink: 0;
+    display: flex;
+    align-items: center;
 }
 
 .ga-slug-preview .ga-input {
     border: none;
-    background: transparent;
     border-radius: 0;
     box-shadow: none;
-    width: 180px;
+    height: auto;
+    flex: 1;
 }
 
 .ga-slug-preview .ga-input:focus {
@@ -274,10 +286,11 @@
 
 .ga-textarea {
     width: 100%;
-    background: var(--ga-input-bg);
-    border: 1px solid var(--ga-input-border);
+    min-height: 90px;
+    background: var(--ga-surface);
+    border: 1px solid var(--ga-border);
     border-radius: var(--ga-radius-sm);
-    color: var(--ga-accent);
+    color: var(--ga-text);
     font-size: 12px;
     font-family: "SFMono-Regular", Consolas, monospace;
     padding: 10px 12px;
@@ -288,8 +301,8 @@
 }
 
 .ga-textarea:focus {
-    border-color: var(--ga-purple);
-    box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.15);
+    border-color: var(--ga-border-focus);
+    box-shadow: 0 0 0 3px rgba(99,102,241,0.12);
 }
 
 .ga-textarea::placeholder {
@@ -310,14 +323,14 @@
 .ga-toggle-label {
     display: flex;
     align-items: flex-start;
-    gap: 14px;
+    gap: 12px;
     cursor: pointer;
 }
 
 .ga-toggle {
     position: relative;
     flex-shrink: 0;
-    margin-top: 2px;
+    margin-top: 1px;
 }
 
 .ga-toggle input[type="checkbox"] {
@@ -330,40 +343,38 @@
 
 .ga-toggle__track {
     display: block;
-    width: 40px;
-    height: 22px;
-    background: var(--ga-input-bg);
-    border: 1px solid var(--ga-input-border);
-    border-radius: 11px;
+    width: 36px;
+    height: 20px;
+    background: #d1d5db;
+    border-radius: 10px;
     position: relative;
-    transition: background 0.2s, border-color 0.2s;
+    transition: background 0.15s;
     cursor: pointer;
 }
 
 .ga-toggle__thumb {
     display: block;
     position: absolute;
-    top: 3px;
-    left: 3px;
-    width: 14px;
-    height: 14px;
-    background: var(--ga-text-muted);
+    top: 2px;
+    left: 2px;
+    width: 16px;
+    height: 16px;
+    background: #ffffff;
     border-radius: 50%;
-    transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1), background 0.2s;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.18);
+    transition: transform 0.15s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .ga-toggle input:checked ~ .ga-toggle__track {
     background: var(--ga-purple);
-    border-color: var(--ga-purple);
 }
 
 .ga-toggle input:checked ~ .ga-toggle__track .ga-toggle__thumb {
-    background: #fff;
-    transform: translateX(18px);
+    transform: translateX(16px);
 }
 
 .ga-toggle input:focus-visible ~ .ga-toggle__track {
-    outline: 2px solid var(--ga-purple);
+    outline: 2px solid var(--ga-border-focus);
     outline-offset: 2px;
 }
 
@@ -377,8 +388,8 @@
 
 .ga-toggle-text__title {
     font-size: 13px;
-    font-weight: 600;
-    color: var(--ga-accent);
+    font-weight: 500;
+    color: var(--ga-text);
     line-height: 1.3;
 }
 
@@ -388,12 +399,14 @@
     line-height: 1.5;
 }
 
-/* ── Actions ── */
+/* ── Actions row ── */
 
 .ga-actions {
     display: flex;
     justify-content: flex-end;
     margin-top: 8px;
+    padding-top: 20px;
+    border-top: 1px solid var(--ga-border);
 }
 
 /* ── Button ── */
@@ -411,39 +424,26 @@
     outline: none;
     transition: background 0.15s, transform 0.1s, box-shadow 0.15s;
     letter-spacing: 0.2px;
+    font-family: inherit;
 }
 
 .ga-btn--primary {
     background: var(--ga-purple);
-    color: #fff;
-    box-shadow: 0 2px 8px rgba(124, 58, 237, 0.3);
+    color: #ffffff;
 }
 
 .ga-btn--primary:hover {
-    background: var(--ga-purple-dim);
-    box-shadow: 0 4px 12px rgba(124, 58, 237, 0.4);
+    background: var(--ga-purple-hover);
     transform: translateY(-1px);
+    box-shadow: var(--ga-shadow-md);
 }
 
 .ga-btn--primary:active {
     transform: translateY(0);
-    box-shadow: 0 1px 4px rgba(124, 58, 237, 0.25);
+    box-shadow: none;
 }
 
 .ga-btn--primary:focus-visible {
     outline: 2px solid var(--ga-purple);
     outline-offset: 3px;
-}
-
-/* ── WP admin chrome override ── */
-
-.toplevel_page_ghost-admin #wpbody-content .wrap {
-    background: transparent;
-}
-
-/* Suppress default WP h1 styles that bleed in */
-.ga-wrap h1,
-.ga-wrap h2 {
-    padding: 0;
-    border: none;
 }
