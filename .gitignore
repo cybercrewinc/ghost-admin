@@ -1,0 +1,19 @@
+# Distribution zips and staging
+*.zip
+_zip_stage/
+
+# Claude Code memory
+.claude/
+memory/
+
+# Dev/agent docs — local only (may contain credentials)
+AGENT-PROMPT.md
+DEV-LOG.md
+RELEASE-NOTES.md
+*.md
+
+# OS and editor
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
