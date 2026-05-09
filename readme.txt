@@ -1,8 +1,8 @@
 === GhostAdmin ===
 Contributors: cybercrew
-Tags: security, login, admin, stealth, 404, wp-admin, custom login url
+Tags: security, login, admin, stealth, hardening
 Requires at least: 6.2
-Tested up to: 6.7
+Tested up to: 6.9
 Requires PHP: 8.1
 Stable tag: 1.0.0
 License: GPLv2 or later

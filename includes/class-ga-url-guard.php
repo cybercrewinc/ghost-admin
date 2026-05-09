@@ -54,8 +54,8 @@ class GA_Url_Guard {
             return;
         }
 
-        // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
-        $request_path = trim( parse_url( $_SERVER['REQUEST_URI'] ?? '', PHP_URL_PATH ) ?? '', '/' );
+        $raw_uri      = sanitize_text_field( wp_unslash( $_SERVER['REQUEST_URI'] ?? '' ) );
+        $request_path = trim( wp_parse_url( $raw_uri, PHP_URL_PATH ) ?? '', '/' );
 
         if ( $request_path !== trim( $slug, '/' ) ) {
             return;
@@ -67,7 +67,7 @@ class GA_Url_Guard {
         }
 
         // Pass through to wp-login.php while preserving query string.
-        $query_string = $_SERVER['QUERY_STRING'] ?? '';
+        $query_string = sanitize_text_field( wp_unslash( $_SERVER['QUERY_STRING'] ?? '' ) );
         $target       = site_url( 'wp-login.php' ) . ( '' !== $query_string ? '?' . $query_string : '' );
         wp_safe_redirect( $target );
         exit;
@@ -77,9 +77,8 @@ class GA_Url_Guard {
      * Main request interceptor — runs at template_redirect priority 1.
      */
     public function intercept_request(): void {
-        // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
-        $request_uri  = $_SERVER['REQUEST_URI'] ?? '';
-        $request_path = parse_url( $request_uri, PHP_URL_PATH ) ?? '';
+        $request_uri  = sanitize_text_field( wp_unslash( $_SERVER['REQUEST_URI'] ?? '' ) );
+        $request_path = wp_parse_url( $request_uri, PHP_URL_PATH ) ?? '';
 
         // Never block admin-ajax.php — plugins rely on it from the front end.
         if ( false !== strpos( $request_path, 'admin-ajax.php' ) ) {
@@ -254,7 +253,7 @@ class GA_Url_Guard {
      * Only falls back to forwarded headers if REMOTE_ADDR is a known proxy.
      */
     private function get_visitor_ip(): string {
-        return sanitize_text_field( $_SERVER['REMOTE_ADDR'] ?? '' );
+        return sanitize_text_field( wp_unslash( $_SERVER['REMOTE_ADDR'] ?? '' ) );
     }
 
     /**
