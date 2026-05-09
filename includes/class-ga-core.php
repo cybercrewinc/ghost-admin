@@ -60,6 +60,6 @@ final class GHOST_ADMIN {
     }
 
     public function login_header_text(): string {
-        return esc_html__( 'GhostAdmin — Secure Login', 'ghost-admin' );
+        return esc_html__( 'GhostAdmin — Secure Login', 'ghostadmin-2' );
     }
 }
