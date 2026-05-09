@@ -26,7 +26,7 @@ class GA_Admin {
     }
 
     public function enqueue_assets( string $hook ): void {
-        if ( 'toplevel_page_ghost-admin' !== $hook ) {
+        if ( 'toplevel_page_ghostadmin-2' !== $hook ) {
             return;
         }
         wp_enqueue_style(
@@ -260,7 +260,7 @@ class GA_Admin {
         // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
         GA_Settings::update( $_POST );
 
-        wp_safe_redirect( add_query_arg( 'saved', '1', admin_url( 'admin.php?page=ghost-admin' ) ) );
+        wp_safe_redirect( add_query_arg( 'saved', '1', admin_url( 'admin.php?page=ghostadmin-2' ) ) );
         exit;
     }
 }
