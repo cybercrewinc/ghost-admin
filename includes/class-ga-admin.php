@@ -62,6 +62,32 @@ class GA_Admin {
                 </div>
             <?php endif; ?>
 
+            <?php
+            // Warn: block_default_login on but no custom slug = lockout risk.
+            if ( $settings['block_default_login'] && '' === $settings['custom_login_slug'] ) :
+            ?>
+                <div class="ga-notice ga-notice--warning">
+                    <strong><?php esc_html_e( 'Lockout risk:', 'ghost-admin' ); ?></strong>
+                    <?php esc_html_e( '"Block /wp-login.php" is ON but no Custom Login Slug is set. Set a slug first — otherwise logged-out users (including you) cannot log back in.', 'ghost-admin' ); ?>
+                </div>
+            <?php endif; ?>
+
+            <div class="ga-notice ga-notice--info">
+                <strong><?php esc_html_e( 'You are logged in.', 'ghost-admin' ); ?></strong>
+                <?php esc_html_e( 'All blocks are bypassed for logged-in admins — that is intentional. To test blocks, open a private/incognito window and try visiting /wp-login.php or /wp-admin/.', 'ghost-admin' ); ?>
+                <?php if ( '' !== $settings['custom_login_slug'] ) : ?>
+                    <?php
+                    $login_url = trailingslashit( home_url( $settings['custom_login_slug'] ) );
+                    ?>
+                    <br><strong><?php esc_html_e( 'Your login URL:', 'ghost-admin' ); ?></strong>
+                    <a href="<?php echo esc_url( $login_url ); ?>" target="_blank" class="ga-login-url">
+                        <?php echo esc_html( $login_url ); ?>
+                    </a>
+                <?php else : ?>
+                    <br><?php esc_html_e( 'No custom slug set — login URL is still /wp-login.php.', 'ghost-admin' ); ?>
+                <?php endif; ?>
+            </div>
+
             <form method="post" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>">
                 <?php wp_nonce_field( 'ga_save_settings', 'ga_nonce' ); ?>
                 <input type="hidden" name="action" value="ga_save">

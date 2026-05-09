@@ -115,6 +115,37 @@
     color: var(--ga-success);
 }
 
+.ga-notice--warning {
+    background: rgba(234, 179, 8, 0.1);
+    border: 1px solid rgba(234, 179, 8, 0.35);
+    color: #fbbf24;
+    line-height: 1.5;
+}
+
+.ga-notice--info {
+    background: rgba(124, 58, 237, 0.1);
+    border: 1px solid rgba(124, 58, 237, 0.35);
+    color: var(--ga-text);
+    line-height: 1.6;
+}
+
+.ga-notice--info strong {
+    color: #a78bfa;
+}
+
+.ga-login-url {
+    color: #a78bfa;
+    font-family: monospace;
+    font-size: 13px;
+    word-break: break-all;
+    text-decoration: none;
+}
+
+.ga-login-url:hover {
+    text-decoration: underline;
+    color: var(--ga-purple);
+}
+
 /* ── Card ── */
 
 .ga-card {
