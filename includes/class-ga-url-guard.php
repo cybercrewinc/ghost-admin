@@ -275,8 +275,8 @@ class GA_Url_Guard {
         nocache_headers();
         if ( ! $settings['stealth_404'] ) {
             wp_die(
-                esc_html__( 'Forbidden', 'ghostadmin-2' ),
-                esc_html__( 'Access Denied', 'ghostadmin-2' ),
+                esc_html__( 'Forbidden', 'ghostadmin' ),
+                esc_html__( 'Access Denied', 'ghostadmin' ),
                 [ 'response' => 403 ]
             );
         }
@@ -306,8 +306,8 @@ class GA_Url_Guard {
         }
 
         wp_die(
-            esc_html__( 'Forbidden', 'ghostadmin-2' ),
-            esc_html__( 'Access Denied', 'ghostadmin-2' ),
+            esc_html__( 'Forbidden', 'ghostadmin' ),
+            esc_html__( 'Access Denied', 'ghostadmin' ),
             [ 'response' => 403 ]
         );
     }

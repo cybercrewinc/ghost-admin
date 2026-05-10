@@ -15,10 +15,10 @@ class GA_Admin {
 
     public function add_menu(): void {
         add_menu_page(
-            esc_html__( 'GhostAdmin Settings', 'ghostadmin-2' ),
-            esc_html__( 'GhostAdmin', 'ghostadmin-2' ),
+            esc_html__( 'GhostAdmin Settings', 'ghostadmin' ),
+            esc_html__( 'GhostAdmin', 'ghostadmin' ),
             'manage_options',
-            'ghostadmin-2',
+            'ghostadmin',
             [ $this, 'settings_page' ],
             'dashicons-hidden',
             81
@@ -26,7 +26,7 @@ class GA_Admin {
     }
 
     public function enqueue_assets( string $hook ): void {
-        if ( 'toplevel_page_ghostadmin-2' !== $hook ) {
+        if ( 'toplevel_page_ghostadmin' !== $hook ) {
             return;
         }
         wp_enqueue_style(
@@ -39,7 +39,7 @@ class GA_Admin {
 
     public function settings_page(): void {
         if ( ! current_user_can( 'manage_options' ) ) {
-            wp_die( esc_html__( 'You do not have permission to access this page.', 'ghostadmin-2' ) );
+            wp_die( esc_html__( 'You do not have permission to access this page.', 'ghostadmin' ) );
         }
 
         $settings = GA_Settings::get_all();
@@ -50,15 +50,15 @@ class GA_Admin {
             <header class="ga-header">
                 <span class="ga-header__icon">&#x1F47B;</span>
                 <div class="ga-header__text">
-                    <h1><?php esc_html_e( 'GhostAdmin', 'ghostadmin-2' ); ?></h1>
-                    <p><?php esc_html_e( 'Hides your WordPress admin presence entirely.', 'ghostadmin-2' ); ?></p>
+                    <h1><?php esc_html_e( 'GhostAdmin', 'ghostadmin' ); ?></h1>
+                    <p><?php esc_html_e( 'Hides your WordPress admin presence entirely.', 'ghostadmin' ); ?></p>
                 </div>
                 <span class="ga-badge">v<?php echo esc_html( GA_VERSION ); ?></span>
             </header>
 
             <?php if ( $saved ) : ?>
                 <div class="ga-notice ga-notice--success">
-                    <?php esc_html_e( 'Settings saved.', 'ghostadmin-2' ); ?>
+                    <?php esc_html_e( 'Settings saved.', 'ghostadmin' ); ?>
                 </div>
             <?php endif; ?>
 
@@ -67,24 +67,24 @@ class GA_Admin {
             if ( $settings['block_default_login'] && '' === $settings['custom_login_slug'] ) :
             ?>
                 <div class="ga-notice ga-notice--warning">
-                    <strong><?php esc_html_e( 'Lockout risk:', 'ghostadmin-2' ); ?></strong>
-                    <?php esc_html_e( '"Block /wp-login.php" is ON but no Custom Login Slug is set. Set a slug first — otherwise logged-out users (including you) cannot log back in.', 'ghostadmin-2' ); ?>
+                    <strong><?php esc_html_e( 'Lockout risk:', 'ghostadmin' ); ?></strong>
+                    <?php esc_html_e( '"Block /wp-login.php" is ON but no Custom Login Slug is set. Set a slug first — otherwise logged-out users (including you) cannot log back in.', 'ghostadmin' ); ?>
                 </div>
             <?php endif; ?>
 
             <div class="ga-notice ga-notice--info">
-                <strong><?php esc_html_e( 'You are logged in.', 'ghostadmin-2' ); ?></strong>
-                <?php esc_html_e( 'All blocks are bypassed for logged-in admins — that is intentional. To test blocks, open a private/incognito window and try visiting /wp-login.php or /wp-admin/.', 'ghostadmin-2' ); ?>
+                <strong><?php esc_html_e( 'You are logged in.', 'ghostadmin' ); ?></strong>
+                <?php esc_html_e( 'All blocks are bypassed for logged-in admins — that is intentional. To test blocks, open a private/incognito window and try visiting /wp-login.php or /wp-admin/.', 'ghostadmin' ); ?>
                 <?php if ( '' !== $settings['custom_login_slug'] ) : ?>
                     <?php
                     $login_url = trailingslashit( home_url( $settings['custom_login_slug'] ) );
                     ?>
-                    <br><strong><?php esc_html_e( 'Your login URL:', 'ghostadmin-2' ); ?></strong>
+                    <br><strong><?php esc_html_e( 'Your login URL:', 'ghostadmin' ); ?></strong>
                     <a href="<?php echo esc_url( $login_url ); ?>" target="_blank" class="ga-login-url">
                         <?php echo esc_html( $login_url ); ?>
                     </a>
                 <?php else : ?>
-                    <br><?php esc_html_e( 'No custom slug set — login URL is still /wp-login.php.', 'ghostadmin-2' ); ?>
+                    <br><?php esc_html_e( 'No custom slug set — login URL is still /wp-login.php.', 'ghostadmin' ); ?>
                 <?php endif; ?>
             </div>
 
@@ -94,12 +94,12 @@ class GA_Admin {
 
                 <!-- Custom Login URL -->
                 <section class="ga-card">
-                    <h2 class="ga-section-title"><?php esc_html_e( 'Custom Admin URL', 'ghostadmin-2' ); ?></h2>
+                    <h2 class="ga-section-title"><?php esc_html_e( 'Custom Admin URL', 'ghostadmin' ); ?></h2>
                     <hr class="ga-section-divider">
 
                     <div class="ga-field">
                         <label for="ga_slug" class="ga-label">
-                            <?php esc_html_e( 'Custom Login Slug', 'ghostadmin-2' ); ?>
+                            <?php esc_html_e( 'Custom Login Slug', 'ghostadmin' ); ?>
                         </label>
                         <div class="ga-slug-preview">
                             <span class="ga-slug-base"><?php echo esc_html( trailingslashit( home_url() ) ); ?></span>
@@ -115,14 +115,14 @@ class GA_Admin {
                             >
                         </div>
                         <p class="ga-help">
-                            <?php esc_html_e( 'Leave blank to disable. Use letters, numbers, and hyphens only. Reserved WP paths are rejected.', 'ghostadmin-2' ); ?>
+                            <?php esc_html_e( 'Leave blank to disable. Use letters, numbers, and hyphens only. Reserved WP paths are rejected.', 'ghostadmin' ); ?>
                         </p>
                     </div>
                 </section>
 
                 <!-- Default URL Blocking -->
                 <section class="ga-card">
-                    <h2 class="ga-section-title"><?php esc_html_e( 'Block Default Admin URLs', 'ghostadmin-2' ); ?></h2>
+                    <h2 class="ga-section-title"><?php esc_html_e( 'Block Default Admin URLs', 'ghostadmin' ); ?></h2>
                     <hr class="ga-section-divider">
 
                     <div class="ga-field ga-field--row">
@@ -132,8 +132,8 @@ class GA_Admin {
                                 <span class="ga-toggle__track"><span class="ga-toggle__thumb"></span></span>
                             </div>
                             <div class="ga-toggle-text">
-                                <span class="ga-toggle-text__title"><?php esc_html_e( 'Block /wp-login.php and /wp-admin/', 'ghostadmin-2' ); ?></span>
-                                <span class="ga-toggle-text__desc"><?php esc_html_e( 'Unauthenticated access returns a stealth 404. AJAX and cron endpoints are always exempt.', 'ghostadmin-2' ); ?></span>
+                                <span class="ga-toggle-text__title"><?php esc_html_e( 'Block /wp-login.php and /wp-admin/', 'ghostadmin' ); ?></span>
+                                <span class="ga-toggle-text__desc"><?php esc_html_e( 'Unauthenticated access returns a stealth 404. AJAX and cron endpoints are always exempt.', 'ghostadmin' ); ?></span>
                             </div>
                         </label>
                     </div>
@@ -141,7 +141,7 @@ class GA_Admin {
 
                 <!-- Folder / File Blocking -->
                 <section class="ga-card">
-                    <h2 class="ga-section-title"><?php esc_html_e( 'Block Direct File & Folder Access', 'ghostadmin-2' ); ?></h2>
+                    <h2 class="ga-section-title"><?php esc_html_e( 'Block Direct File & Folder Access', 'ghostadmin' ); ?></h2>
                     <hr class="ga-section-divider">
 
                     <div class="ga-field ga-field--row">
@@ -151,8 +151,8 @@ class GA_Admin {
                                 <span class="ga-toggle__track"><span class="ga-toggle__thumb"></span></span>
                             </div>
                             <div class="ga-toggle-text">
-                                <span class="ga-toggle-text__title"><?php esc_html_e( 'Block /wp-content/ and /wp-includes/ directory listings', 'ghostadmin-2' ); ?></span>
-                                <span class="ga-toggle-text__desc"><?php esc_html_e( 'Blocks bare directory URL access. Individual files inside are not affected.', 'ghostadmin-2' ); ?></span>
+                                <span class="ga-toggle-text__title"><?php esc_html_e( 'Block /wp-content/ and /wp-includes/ directory listings', 'ghostadmin' ); ?></span>
+                                <span class="ga-toggle-text__desc"><?php esc_html_e( 'Blocks bare directory URL access. Individual files inside are not affected.', 'ghostadmin' ); ?></span>
                             </div>
                         </label>
                     </div>
@@ -164,8 +164,8 @@ class GA_Admin {
                                 <span class="ga-toggle__track"><span class="ga-toggle__thumb"></span></span>
                             </div>
                             <div class="ga-toggle-text">
-                                <span class="ga-toggle-text__title"><?php esc_html_e( 'Block sensitive files', 'ghostadmin-2' ); ?></span>
-                                <span class="ga-toggle-text__desc"><?php esc_html_e( 'readme.html, license.txt, wp-config.php, wp-config-sample.php', 'ghostadmin-2' ); ?></span>
+                                <span class="ga-toggle-text__title"><?php esc_html_e( 'Block sensitive files', 'ghostadmin' ); ?></span>
+                                <span class="ga-toggle-text__desc"><?php esc_html_e( 'readme.html, license.txt, wp-config.php, wp-config-sample.php', 'ghostadmin' ); ?></span>
                             </div>
                         </label>
                     </div>
@@ -177,8 +177,8 @@ class GA_Admin {
                                 <span class="ga-toggle__track"><span class="ga-toggle__thumb"></span></span>
                             </div>
                             <div class="ga-toggle-text">
-                                <span class="ga-toggle-text__title"><?php esc_html_e( 'Block xmlrpc.php', 'ghostadmin-2' ); ?></span>
-                                <span class="ga-toggle-text__desc"><?php esc_html_e( 'Recommended unless you specifically use XML-RPC for publishing or Jetpack.', 'ghostadmin-2' ); ?></span>
+                                <span class="ga-toggle-text__title"><?php esc_html_e( 'Block xmlrpc.php', 'ghostadmin' ); ?></span>
+                                <span class="ga-toggle-text__desc"><?php esc_html_e( 'Recommended unless you specifically use XML-RPC for publishing or Jetpack.', 'ghostadmin' ); ?></span>
                             </div>
                         </label>
                     </div>
@@ -190,8 +190,8 @@ class GA_Admin {
                                 <span class="ga-toggle__track"><span class="ga-toggle__thumb"></span></span>
                             </div>
                             <div class="ga-toggle-text">
-                                <span class="ga-toggle-text__title"><?php esc_html_e( 'Block direct wp-cron.php access', 'ghostadmin-2' ); ?></span>
-                                <span class="ga-toggle-text__desc"><?php esc_html_e( 'Disable if your host triggers WP-Cron via a system cron job hitting this URL directly.', 'ghostadmin-2' ); ?></span>
+                                <span class="ga-toggle-text__title"><?php esc_html_e( 'Block direct wp-cron.php access', 'ghostadmin' ); ?></span>
+                                <span class="ga-toggle-text__desc"><?php esc_html_e( 'Disable if your host triggers WP-Cron via a system cron job hitting this URL directly.', 'ghostadmin' ); ?></span>
                             </div>
                         </label>
                     </div>
@@ -199,7 +199,7 @@ class GA_Admin {
 
                 <!-- Stealth Mode -->
                 <section class="ga-card">
-                    <h2 class="ga-section-title"><?php esc_html_e( 'Stealth Mode', 'ghostadmin-2' ); ?></h2>
+                    <h2 class="ga-section-title"><?php esc_html_e( 'Stealth Mode', 'ghostadmin' ); ?></h2>
                     <hr class="ga-section-divider">
 
                     <div class="ga-field ga-field--row">
@@ -209,8 +209,8 @@ class GA_Admin {
                                 <span class="ga-toggle__track"><span class="ga-toggle__thumb"></span></span>
                             </div>
                             <div class="ga-toggle-text">
-                                <span class="ga-toggle-text__title"><?php esc_html_e( 'Use stealth 404 instead of 403', 'ghostadmin-2' ); ?></span>
-                                <span class="ga-toggle-text__desc"><?php esc_html_e( 'Blocked requests return a real 404 page so bots cannot fingerprint admin paths. Recommended on.', 'ghostadmin-2' ); ?></span>
+                                <span class="ga-toggle-text__title"><?php esc_html_e( 'Use stealth 404 instead of 403', 'ghostadmin' ); ?></span>
+                                <span class="ga-toggle-text__desc"><?php esc_html_e( 'Blocked requests return a real 404 page so bots cannot fingerprint admin paths. Recommended on.', 'ghostadmin' ); ?></span>
                             </div>
                         </label>
                     </div>
@@ -218,12 +218,12 @@ class GA_Admin {
 
                 <!-- IP Whitelist -->
                 <section class="ga-card">
-                    <h2 class="ga-section-title"><?php esc_html_e( 'IP Whitelist', 'ghostadmin-2' ); ?></h2>
+                    <h2 class="ga-section-title"><?php esc_html_e( 'IP Whitelist', 'ghostadmin' ); ?></h2>
                     <hr class="ga-section-divider">
 
                     <div class="ga-field">
                         <label for="ga_whitelist" class="ga-label">
-                            <?php esc_html_e( 'Whitelisted IPs / CIDR Ranges', 'ghostadmin-2' ); ?>
+                            <?php esc_html_e( 'Whitelisted IPs / CIDR Ranges', 'ghostadmin' ); ?>
                         </label>
                         <textarea
                             id="ga_whitelist"
@@ -234,14 +234,14 @@ class GA_Admin {
                             spellcheck="false"
                         ><?php echo esc_textarea( $settings['whitelist_ips'] ); ?></textarea>
                         <p class="ga-help">
-                            <?php esc_html_e( 'One entry per line. Supports exact IPs and CIDR notation. These IPs bypass all GhostAdmin blocks.', 'ghostadmin-2' ); ?>
+                            <?php esc_html_e( 'One entry per line. Supports exact IPs and CIDR notation. These IPs bypass all GhostAdmin blocks.', 'ghostadmin' ); ?>
                         </p>
                     </div>
                 </section>
 
                 <div class="ga-actions">
                     <button type="submit" class="ga-btn ga-btn--primary">
-                        <?php esc_html_e( 'Save Settings', 'ghostadmin-2' ); ?>
+                        <?php esc_html_e( 'Save Settings', 'ghostadmin' ); ?>
                     </button>
                 </div>
 
@@ -252,7 +252,7 @@ class GA_Admin {
 
     public function handle_save(): void {
         if ( ! current_user_can( 'manage_options' ) ) {
-            wp_die( esc_html__( 'Permission denied.', 'ghostadmin-2' ) );
+            wp_die( esc_html__( 'Permission denied.', 'ghostadmin' ) );
         }
 
         check_admin_referer( 'ga_save_settings', 'ga_nonce' );
@@ -260,7 +260,7 @@ class GA_Admin {
         // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
         GA_Settings::update( $_POST );
 
-        wp_safe_redirect( add_query_arg( 'saved', '1', admin_url( 'admin.php?page=ghostadmin-2' ) ) );
+        wp_safe_redirect( add_query_arg( 'saved', '1', admin_url( 'admin.php?page=ghostadmin' ) ) );
         exit;
     }
 }
