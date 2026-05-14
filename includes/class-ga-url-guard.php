@@ -97,6 +97,10 @@ class GA_Url_Guard {
 
         nocache_headers();
 
+        // PHP 8.x warns on undefined vars that wp-login.php reads before its action fires.
+        $user_login = '';
+        $error      = '';
+
         // phpcs:ignore WordPressVIPMinimum.Files.IncludingFile.UsingVariable
         require ABSPATH . 'wp-login.php';
         exit;

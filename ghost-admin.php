@@ -1,11 +1,11 @@
 <?php
 /**
  * Plugin Name:  GhostAdmin
- * Plugin URI:   https://github.com/cybercrewinc/ghost-admin
+ * Plugin URI:   https://ghost-admin.cybercrew.co.jp/?lang=en
  * Description:  Hides your WordPress admin presence entirely.
- * Version:      1.0.0
+ * Version:      1.0.1
  * Author:       CyberCrew
- * Author URI:   https://cyber.spool.co.jp
+ * Author URI:   https://cybercrew.co.jp
  * License:      GPLv2 or later
  * License URI:  https://www.gnu.org/licenses/gpl-2.0.html
  * Requires at least: 6.2
@@ -15,7 +15,7 @@
 
 defined( 'ABSPATH' ) || exit;
 
-define( 'GA_VERSION',  '1.0.0' );
+define( 'GA_VERSION',  '1.0.1' );
 define( 'GA_PATH',     plugin_dir_path( __FILE__ ) );
 define( 'GA_URL',      plugin_dir_url( __FILE__ ) );
 define( 'GA_BASENAME', plugin_basename( __FILE__ ) );

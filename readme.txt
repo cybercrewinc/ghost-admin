@@ -4,7 +4,7 @@ Tags: security, login, admin, stealth, hardening
 Requires at least: 6.2
 Tested up to: 6.9
 Requires PHP: 8.1
-Stable tag: 1.0.0
+Stable tag: 1.0.1
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -42,7 +42,10 @@ your own office IP or a trusted CI/CD runner.
 
 = Source Code =
 
-Source code is publicly available at: https://github.com/cybercrewinc/ghost-admin
+Source code is publicly available at: https://github.com/cybercrewinc/ghost-admin/
+
+Official plugin page: https://ghost-admin.cybercrew.co.jp/?lang=en
+Developed by [CyberCrew](https://cybercrew.co.jp)
 
 == Installation ==
 
@@ -94,6 +97,13 @@ settings are stored locally in your WordPress database only.
 
 == Changelog ==
 
+= 1.0.1 =
+* Fix: Plugin URI updated to official plugin page (was GitHub URL returning 404).
+* Fix: Author URI corrected to cybercrew.co.jp (previous domain was broken/stale).
+* Fix: All i18n calls now use the correct text domain `ghostadmin` (was `ghostadmin-2`).
+* Fix: Suppressed PHP 8.x undefined-variable notices in `serve_custom_login_slug()`.
+* Readme: Added official plugin page and CyberCrew attribution to source section.
+
 = 1.0.0 =
 * Initial release.
 * Custom admin URL — replace /wp-login.php with any slug.
@@ -103,6 +113,9 @@ settings are stored locally in your WordPress database only.
 * Clean flat light-mode admin UI.
 
 == Upgrade Notice ==
+
+= 1.0.1 =
+Metadata and text-domain corrections for WordPress.org compliance. No settings or database changes.
 
 = 1.0.0 =
 Initial release — no upgrade steps required.
