@@ -60,6 +60,6 @@ final class GHOST_ADMIN {
     }
 
     public function login_header_text(): string {
-        return esc_html__( 'GhostAdmin — Secure Login', 'ghostadmin' );
+        return esc_html__( 'CyberCrew Admin Hide — Secure Login', 'cybercrew-admin-hide' );
     }
 }

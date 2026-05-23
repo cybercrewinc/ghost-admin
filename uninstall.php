@@ -1,6 +1,6 @@
 <?php
 /**
- * Uninstall GhostAdmin — runs when plugin is deleted from WP admin.
+ * Uninstall CyberCrew Admin Hide — runs when plugin is deleted from WP admin.
  */
 
 defined( 'WP_UNINSTALL_PLUGIN' ) || exit;
